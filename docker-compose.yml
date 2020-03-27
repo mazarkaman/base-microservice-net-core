@@ -1,0 +1,56 @@
+version: '3.7'
+
+services:
+  phungdkh.microservice.api:
+    container_name: microservice-api
+    image: phungdkh/microservice-api
+    build:
+      context: .
+      dockerfile: Services/Categories/PhungDKH.Microservice.Api/Dockerfile
+    ports:
+      - 7888:80
+      - 7889:443
+    depends_on:
+      - db1
+      - rabbitmq
+    networks:
+      - phungdkh-brigde
+  db1:
+    container_name: phungdkh.mssql.db
+    image: microsoft/mssql-server-linux:2017-latest
+    environment:
+      MSSQL_SA_PASSWORD: "phungdkh@!@#123"
+      ACCEPT_EULA: "Y"
+      MSSQL_TCP_PORT: 1433
+    ports:
+      - 1433:1433
+    volumes:
+      - mssql-db-data:/var/opt/mssql
+    networks:
+      - phungdkh-brigde
+  rabbitmq:
+    container_name: phungdkh.rabbitmq
+    image: rabbitmq:3.7-management  
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest 
+    ports:
+      - 15672:15672
+      - 5672:5672
+    networks: 
+      - phungdkh-brigde
+  phungdkh.microservice.migrateapp:
+    image: ${DOCKER_REGISTRY-}phungdkhmicroservicemigrateapp
+    build:
+      context: .
+      dockerfile: Services/Categories/PhungDKH.Microservice.MigrateApp/Dockerfile
+    networks: 
+      - phungdkh-brigde
+    depends_on:
+      - db1
+volumes:
+  mssql-db-data:
+
+networks:
+  phungdkh-brigde:
+    driver: bridge

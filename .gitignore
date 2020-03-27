@@ -1,0 +1,13 @@
+.vs/
+Servives/Categories/PhungDKH.Microservice.Api/bin/
+Servives/Categories/PhungDKH.Microservice.Api/obj/
+Servives/Categories/PhungDKH.Microservice.Core/obj/
+Servives/Categories/PhungDKH.Microservice.Domain/bin/
+Servives/Categories/PhungDKH.Microservice.Domain/obj/
+Servives/Categories/PhungDKH.Microservice.MigrateApp/bin/
+Servives/Categories/PhungDKH.Microservice.MigrateApp/obj/
+Servives/Categories/PhungDKH.Microservice.Service/bin/
+Servives/Categories/PhungDKH.Microservice.Service/obj/
+Servives/Categories/PhungDKH.Microservice.Core/bin/
+bin/
+obj/

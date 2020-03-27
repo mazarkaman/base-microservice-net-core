@@ -1,0 +1,67 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhungDKH.Microservice.Api", "Services\Categories\PhungDKH.Microservice.Api\PhungDKH.Microservice.Api.csproj", "{63CC510E-1E2D-434A-97C5-EFA431F249FB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhungDKH.Microservice.Service", "Services\Categories\PhungDKH.Microservice.Service\PhungDKH.Microservice.Service.csproj", "{88FEB40B-D1C5-4098-9E11-E11FB927F63B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhungDKH.Microservice.MigrateApp", "Services\Categories\PhungDKH.Microservice.MigrateApp\PhungDKH.Microservice.MigrateApp.csproj", "{AC31B664-9F0B-451E-ABE9-8D84726DC8F6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhungDKH.Microservice.Domain", "Services\Categories\PhungDKH.Microservice.Domain\PhungDKH.Microservice.Domain.csproj", "{79F4F0E0-D9DE-4AC9-8BDA-5574997E8D23}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhungDKH.Microservice.Core", "Services\Categories\PhungDKH.Microservice.Core\PhungDKH.Microservice.Core.csproj", "{0A413DDB-3C02-45D8-BDB3-A97406B890D9}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{CCD2F228-E44F-438D-B793-F6CAD3653FD7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{5ACB5081-9F7B-4296-862F-4E22922993F9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Categories", "Categories", "{E16583E7-D44E-4773-B37E-D67FD0047119}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{63CC510E-1E2D-434A-97C5-EFA431F249FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63CC510E-1E2D-434A-97C5-EFA431F249FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63CC510E-1E2D-434A-97C5-EFA431F249FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63CC510E-1E2D-434A-97C5-EFA431F249FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88FEB40B-D1C5-4098-9E11-E11FB927F63B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88FEB40B-D1C5-4098-9E11-E11FB927F63B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88FEB40B-D1C5-4098-9E11-E11FB927F63B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88FEB40B-D1C5-4098-9E11-E11FB927F63B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC31B664-9F0B-451E-ABE9-8D84726DC8F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC31B664-9F0B-451E-ABE9-8D84726DC8F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC31B664-9F0B-451E-ABE9-8D84726DC8F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC31B664-9F0B-451E-ABE9-8D84726DC8F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79F4F0E0-D9DE-4AC9-8BDA-5574997E8D23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79F4F0E0-D9DE-4AC9-8BDA-5574997E8D23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79F4F0E0-D9DE-4AC9-8BDA-5574997E8D23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79F4F0E0-D9DE-4AC9-8BDA-5574997E8D23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A413DDB-3C02-45D8-BDB3-A97406B890D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A413DDB-3C02-45D8-BDB3-A97406B890D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A413DDB-3C02-45D8-BDB3-A97406B890D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A413DDB-3C02-45D8-BDB3-A97406B890D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCD2F228-E44F-438D-B793-F6CAD3653FD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCD2F228-E44F-438D-B793-F6CAD3653FD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCD2F228-E44F-438D-B793-F6CAD3653FD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCD2F228-E44F-438D-B793-F6CAD3653FD7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{63CC510E-1E2D-434A-97C5-EFA431F249FB} = {E16583E7-D44E-4773-B37E-D67FD0047119}
+		{88FEB40B-D1C5-4098-9E11-E11FB927F63B} = {E16583E7-D44E-4773-B37E-D67FD0047119}
+		{AC31B664-9F0B-451E-ABE9-8D84726DC8F6} = {E16583E7-D44E-4773-B37E-D67FD0047119}
+		{79F4F0E0-D9DE-4AC9-8BDA-5574997E8D23} = {E16583E7-D44E-4773-B37E-D67FD0047119}
+		{0A413DDB-3C02-45D8-BDB3-A97406B890D9} = {E16583E7-D44E-4773-B37E-D67FD0047119}
+		{E16583E7-D44E-4773-B37E-D67FD0047119} = {5ACB5081-9F7B-4296-862F-4E22922993F9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B142A7AF-30B5-4985-A458-D90A74DF7504}
+	EndGlobalSection
+EndGlobal

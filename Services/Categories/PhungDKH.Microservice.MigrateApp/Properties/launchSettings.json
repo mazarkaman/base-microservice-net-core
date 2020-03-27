@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "PhungDKH.Microservice.MigrateApp": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
