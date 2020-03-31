@@ -8,7 +8,7 @@
     using AutoMapper;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
-    using PhungDKH.Microservice.Core;
+    using PhungDKH.Core;
     using PhungDKH.Microservice.Domain.Entities.Contexts;
     using PhungDKH.Microservice.Service.Common;
 

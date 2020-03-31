@@ -11,7 +11,7 @@ namespace PhungDKH.Microservice.Api
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.OpenApi.Models;
-    using PhungDKH.Microservice.Core.RabbitMQ;
+    using PhungDKH.EventBusRabbitMQ;
     using PhungDKH.Microservice.Domain.Entities.Contexts;
     using PhungDKH.Microservice.Service.Common;
     using RabbitMQ.Client;
