@@ -2,15 +2,19 @@
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS base
 WORKDIR /app
+ENV ASPNETCORE_URLS http://+:8080
+ENV ASPNETCORE_URLS https://+:8081
 EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["Services/Categories/PhungDKH.Microservice.Api/PhungDKH.Microservice.Api.csproj", "Services/Categories/PhungDKH.Microservice.Api/"]
-COPY ["Services/Categories/PhungDKH.Microservice.Core/PhungDKH.Microservice.Core.csproj", "Services/Categories/PhungDKH.Microservice.Core/"]
 COPY ["Services/Categories/PhungDKH.Microservice.Service/PhungDKH.Microservice.Service.csproj", "Services/Categories/PhungDKH.Microservice.Service/"]
+COPY ["Sharing/PhungDKH.Core/PhungDKH.Core.csproj", "Sharing/PhungDKH.Core/"]
 COPY ["Services/Categories/PhungDKH.Microservice.Domain/PhungDKH.Microservice.Domain.csproj", "Services/Categories/PhungDKH.Microservice.Domain/"]
+COPY ["Sharing/PhungDKH.EvenBus/PhungDKH.EvenBus.csproj", "Sharing/PhungDKH.EvenBus/"]
+COPY ["Sharing/PhungDKH.EventBusRabbitMQ/PhungDKH.EventBusRabbitMQ.csproj", "Sharing/PhungDKH.EventBusRabbitMQ/"]
 RUN dotnet restore "Services/Categories/PhungDKH.Microservice.Api/PhungDKH.Microservice.Api.csproj"
 COPY . .
 WORKDIR "/src/Services/Categories/PhungDKH.Microservice.Api"

@@ -17,15 +17,6 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "PhungDKH.Microservice.Api": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://*:7889"
-    },
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,

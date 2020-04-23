@@ -127,7 +127,7 @@ namespace PhungDKH.Microservice.Api
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -149,6 +149,21 @@ namespace PhungDKH.Microservice.Api
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Microservice API V1");
             });
+
+            // auto migration
+            this.RunMigration(app);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="app"></param>
+        private void RunMigration(IApplicationBuilder app)
+        {
+            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
+            }
         }
     }
 }

@@ -3,15 +3,19 @@
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    [Table("Category")]
-    public class Category : BaseEntity
+    [Table("Product")]
+    public class Product : BaseEntity
     {
-        public Category() : base()
+        public Product() : base()
         {
 
         }
 
         public string Name { get; set; }
+
+        public decimal Price { get; set; }
+
+        public string Thumbnail { get; set; }
 
         public List<ProductInCategory> ProductInCategories { get; set; }
     }

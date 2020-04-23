@@ -5,9 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="EventBusRabbitMQ.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.3" />
     <PackageReference Include="Polly" Version="7.2.0" />
     <PackageReference Include="RabbitMQ.Client" Version="5.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PhungDKH.EvenBus\PhungDKH.EvenBus.csproj" />
   </ItemGroup>
 
 </Project>

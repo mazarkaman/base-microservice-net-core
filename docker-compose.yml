@@ -39,15 +39,6 @@ services:
       - 5672:5672
     networks: 
       - phungdkh-brigde
-  phungdkh.microservice.migrateapp:
-    image: ${DOCKER_REGISTRY-}phungdkhmicroservicemigrateapp
-    build:
-      context: .
-      dockerfile: Services/Categories/PhungDKH.Microservice.MigrateApp/Dockerfile
-    networks: 
-      - phungdkh-brigde
-    depends_on:
-      - db1
 volumes:
   mssql-db-data:
 
