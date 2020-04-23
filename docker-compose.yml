@@ -4,12 +4,14 @@ services:
   phungdkh.microservice.api:
     container_name: microservice-api
     image: phungdkh/microservice-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
     build:
       context: .
       dockerfile: Services/Categories/PhungDKH.Microservice.Api/Dockerfile
     ports:
-      - 7888:80
-      - 7889:443
+      - 1111:443
     depends_on:
       - db1
       - rabbitmq
@@ -37,6 +39,21 @@ services:
     ports:
       - 15672:15672
       - 5672:5672
+    networks: 
+      - phungdkh-brigde
+  phungdkh.identity.api:
+    container_name: identity-api
+    image: phungdkh/identity-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    build:
+      context: .
+      dockerfile: Services/Identity/PhungDKH.Identity.Api/Dockerfile
+    ports:
+      - 2222:443
+    depends_on:
+      - db1
     networks: 
       - phungdkh-brigde
 volumes:

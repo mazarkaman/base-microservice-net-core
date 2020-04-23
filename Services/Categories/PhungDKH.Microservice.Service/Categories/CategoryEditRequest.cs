@@ -6,7 +6,7 @@
     using MediatR;
     using PhungDKH.Microservice.Service.Common;
 
-    public class CategoryPutRequest : IRequest<ResponseModel>
+    public class CategoryEditRequest : IRequest<ResponseModel>
     {
         [JsonIgnore]
         public Guid Id { get; set; }

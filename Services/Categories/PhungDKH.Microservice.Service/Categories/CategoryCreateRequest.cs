@@ -4,7 +4,7 @@
     using MediatR;
     using PhungDKH.Microservice.Service.Common;
 
-    public class CategoryPostRequest : IRequest<ResponseModel>
+    public class CategoryCreateRequest : IRequest<ResponseModel>
     {
         [Required]
         public string Name { get; set; }

@@ -5,47 +5,48 @@
     using System.Threading.Tasks;
     using AutoMapper;
     using MediatR;
-    using Microsoft.EntityFrameworkCore;
+    using PhungDKH.EvenBus.Abstractions;
+    using PhungDKH.Microservice.Domain.Entities;
     using PhungDKH.Microservice.Domain.Entities.Contexts;
+    using PhungDKH.Microservice.Service.Categories.Events;
     using PhungDKH.Microservice.Service.Common;
 
-    public class CategoryPutHandler : IRequestHandler<CategoryPutRequest, ResponseModel>
+    public class CategoryCreateHandler : IRequestHandler<CategoryCreateRequest, ResponseModel>
     {
         private readonly AppDbContext db;
         private readonly IMapper mapper;
+        private readonly IEventBus eventBus;
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="CategoryPutHandler" /> class.
+        ///   Initializes a new instance of the <see cref="CategoryCreateHandler" /> class.
         /// </summary>
         /// <param name="db">The database context.</param>
         /// <param name="mapper">The auto mapper configuration.</param>
-        public CategoryPutHandler(
+        public CategoryCreateHandler(
             AppDbContext db,
-            IMapper mapper)
+            IMapper mapper,
+            IEventBus eventBus)
         {
             this.db = db ?? throw new ArgumentNullException(nameof(db));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            this.eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
         }
 
-        public async Task<ResponseModel> Handle(CategoryPutRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Handle(CategoryCreateRequest request, CancellationToken cancellationToken)
         {
-            var category = await this.db.Categories.FirstOrDefaultAsync(x => x.Id == request.Id);
-            if (category == null)
-            {
-                return new ResponseModel()
-                {
-                    StatusCode = System.Net.HttpStatusCode.NotFound,
-                    Message = "The category is not found"
-                };
-            }
+            var category = this.mapper.Map<Category>(request);
 
-            category.Name = request.Name;
+            this.db.Categories.Add(category);
+
             await this.db.SaveChangesAsync(cancellationToken);
+
+            var eventPost = new CategoryCreatedEvent(request.Name);
+            this.eventBus.Publish(eventPost);
 
             return new ResponseModel()
             {
                 StatusCode = System.Net.HttpStatusCode.OK,
-                Message = "The category was updated successfully"
+                Message = "The category was created successfully"
             };
         }
     }

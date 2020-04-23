@@ -1,4 +1,4 @@
-namespace PhungDKH.Microservice.Api.Infrastructure.Exceptions
+namespace PhungDKH.Identity.Api.Infrastructure.Exceptions
 {
     using System;
 

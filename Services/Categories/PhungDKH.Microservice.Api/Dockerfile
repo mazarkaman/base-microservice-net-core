@@ -2,8 +2,6 @@
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS base
 WORKDIR /app
-ENV ASPNETCORE_URLS http://+:8080
-ENV ASPNETCORE_URLS https://+:8081
 EXPOSE 80
 EXPOSE 443
 
@@ -26,4 +24,5 @@ RUN dotnet publish "PhungDKH.Microservice.Api.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN dotnet dev-certs https
 ENTRYPOINT ["dotnet", "PhungDKH.Microservice.Api.dll"]

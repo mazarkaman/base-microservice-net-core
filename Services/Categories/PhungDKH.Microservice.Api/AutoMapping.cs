@@ -8,8 +8,8 @@
     {
         public AutoMapping()
         {
-            CreateMap<CategoryPostRequest, Category>();
-            CreateMap<CategoryPutRequest, Category>()
+            CreateMap<CategoryCreateRequest, Category>();
+            CreateMap<CategoryEditRequest, Category>()
                 .ForMember(x => x.Id, opt => opt.Ignore());
         }
     }

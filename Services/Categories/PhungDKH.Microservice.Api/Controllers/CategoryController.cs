@@ -57,7 +57,7 @@
         /// <param name="cancellationToken">The cancellation token to abort execution.</param>
         /// <returns>Returns.</returns>
         [HttpPost]
-        public async Task<ResponseModel> PostAsync([FromBody] CategoryPostRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> PostAsync([FromBody] CategoryCreateRequest request, CancellationToken cancellationToken)
         {
             return await this.mediator.Send(request, cancellationToken);
         }
@@ -69,7 +69,7 @@
         /// <param name="cancellationToken">The cancellation token to abort execution.</param>
         /// <returns>Returns.</returns>
         [HttpPut("{id}")]
-        public async Task<ResponseModel> PutAsync(Guid id, [FromBody] CategoryPutRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> PutAsync(Guid id, [FromBody] CategoryEditRequest request, CancellationToken cancellationToken)
         {
             request.Id = id;
             return await this.mediator.Send(request, cancellationToken);

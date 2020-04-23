@@ -5,21 +5,21 @@
     using System.Threading.Tasks;
     using AutoMapper;
     using MediatR;
-    using PhungDKH.Microservice.Domain.Entities;
+    using Microsoft.EntityFrameworkCore;
     using PhungDKH.Microservice.Domain.Entities.Contexts;
     using PhungDKH.Microservice.Service.Common;
 
-    public class CategoryPostHandler : IRequestHandler<CategoryPostRequest, ResponseModel>
+    public class CategoryEditHandler : IRequestHandler<CategoryEditRequest, ResponseModel>
     {
         private readonly AppDbContext db;
         private readonly IMapper mapper;
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="CategoryPostHandler" /> class.
+        ///   Initializes a new instance of the <see cref="CategoryEditHandler" /> class.
         /// </summary>
         /// <param name="db">The database context.</param>
         /// <param name="mapper">The auto mapper configuration.</param>
-        public CategoryPostHandler(
+        public CategoryEditHandler(
             AppDbContext db,
             IMapper mapper)
         {
@@ -27,18 +27,25 @@
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<ResponseModel> Handle(CategoryPostRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Handle(CategoryEditRequest request, CancellationToken cancellationToken)
         {
-            var category = this.mapper.Map<Category>(request);
+            var category = await this.db.Categories.FirstOrDefaultAsync(x => x.Id == request.Id);
+            if (category == null)
+            {
+                return new ResponseModel()
+                {
+                    StatusCode = System.Net.HttpStatusCode.NotFound,
+                    Message = "The category is not found"
+                };
+            }
 
-            this.db.Categories.Add(category);
-
+            category.Name = request.Name;
             await this.db.SaveChangesAsync(cancellationToken);
 
             return new ResponseModel()
             {
                 StatusCode = System.Net.HttpStatusCode.OK,
-                Message = "The category was created successfully"
+                Message = "The category was updated successfully"
             };
         }
     }

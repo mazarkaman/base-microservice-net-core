@@ -1,8 +1,8 @@
-namespace PhungDKH.Microservice.Api.Infrastructure.Filters
+namespace PhungDKH.Identity.Api.Infrastructure.Filters
 {
     using System.Net;
-    using PhungDKH.Microservice.Api.Infrastructure.ActionResults;
-    using PhungDKH.Microservice.Api.Infrastructure.Exceptions;
+    using PhungDKH.Identity.Api.Infrastructure.ActionResults;
+    using PhungDKH.Identity.Api.Infrastructure.Exceptions;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;

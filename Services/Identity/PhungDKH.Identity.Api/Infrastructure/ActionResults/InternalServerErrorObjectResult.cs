@@ -1,4 +1,4 @@
-namespace PhungDKH.Microservice.Api.Infrastructure.ActionResults
+namespace PhungDKH.Identity.Api.Infrastructure.ActionResults
 {
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

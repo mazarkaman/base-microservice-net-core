@@ -1,22 +1,15 @@
-namespace PhungDKH.Microservice.Api
+namespace PhungDKH.Identity.Api
 {
-    using AutoMapper;
-    using PhungDKH.Microservice.Api.Infrastructure.Filters;
-    using MediatR;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
     using Microsoft.OpenApi.Models;
-    using PhungDKH.EvenBus;
-    using PhungDKH.EvenBus.Abstractions;
-    using PhungDKH.EventBusRabbitMQ;
-    using PhungDKH.Microservice.Domain.Entities.Contexts;
-    using PhungDKH.Microservice.Service.Common;
-    using RabbitMQ.Client;
+    using PhungDKH.Identity.Api.Domain;
+    using PhungDKH.Identity.Api.Infrastructure.Filters;
     using Serilog;
 
     public class Startup
@@ -67,88 +60,6 @@ namespace PhungDKH.Microservice.Api
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
 
-            // Register the Swagger generator, defining one or more Swagger documents
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Version = "v1",
-                    Title = "Microservice API",
-                    Description = "Microservice API",
-                    TermsOfService = null,
-                    Contact = new OpenApiContact { Name = "DINH KHAC HOAI PHUNG", Email = "phungdkh@gmail.com", Url = null },
-                });
-
-                c.DescribeAllParametersInCamelCase();
-            });
-
-            services.AddSingleton(Configuration);
-
-            // Entity framework
-            string msSqlConnectionString = Configuration.GetValue<string>("database:msSql:connectionString");
-            services.AddDbContext<AppDbContext>(opt =>
-                opt.UseSqlServer(
-                    msSqlConnectionString,
-                    options =>
-                    {
-                        options.EnableRetryOnFailure();
-                    }));
-
-            // Health checks
-            services.AddHealthChecks()
-                .AddSqlServer(msSqlConnectionString);
-
-            services.AddMediatR(typeof(BaseRequestModel).Assembly);
-            services.AddAutoMapper(typeof(Startup).Assembly);
-
-            services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
-            {
-                var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
-
-                var factory = new ConnectionFactory()
-                {
-                    HostName = Configuration.GetValue<string>("rabbitmq:hostname"),
-                    DispatchConsumersAsync = true
-                };
-
-                if (!string.IsNullOrEmpty(Configuration.GetValue<string>("rabbitmq:username")))
-                {
-                    factory.UserName = Configuration.GetValue<string>("rabbitmq:username");
-                }
-
-                if (!string.IsNullOrEmpty(Configuration.GetValue<string>("rabbitmq:password")))
-                {
-                    factory.Password = Configuration.GetValue<string>("rabbitmq:password");
-                }
-
-                var retryCount = 5;
-                if (!string.IsNullOrEmpty(Configuration.GetValue<string>("rabbitmq:retycount")))
-                {
-                    retryCount = int.Parse(Configuration.GetValue<string>("rabbitmq:retycount"));
-                }
-
-                return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
-            });
-
-            var exchange = Configuration.GetValue<string>("eventbus:exchange");
-            var queue = Configuration.GetValue<string>("eventbus:queue");
-            services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
-            {
-                var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
-                var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
-                var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
-
-                var retryCount = 5;
-                if (!string.IsNullOrEmpty(Configuration.GetValue<string>("eventbus:retryCount")))
-                {
-                    retryCount = Configuration.GetValue<int>("eventbus:retryCount");
-                }
-
-                return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, eventBusSubcriptionsManager, exchange, queue, retryCount);
-            });
-
-            services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
-
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -157,6 +68,31 @@ namespace PhungDKH.Microservice.Api
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials());
+            });
+
+            services.AddSingleton(Configuration);
+
+            // Entity framework
+            string msSqlConnectionString = Configuration.GetValue<string>("database:msSql:connectionString");
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(
+                    msSqlConnectionString));
+            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<AppDbContext>();
+
+            // Register the Swagger generator, defining one or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Identity API",
+                    Description = "Identity API",
+                    TermsOfService = null,
+                    Contact = new OpenApiContact { Name = "DINH KHAC HOAI PHUNG", Email = "phungdkh@gmail.com", Url = null },
+                });
+
+                c.DescribeAllParametersInCamelCase();
             });
         }
 
@@ -174,6 +110,7 @@ namespace PhungDKH.Microservice.Api
 
             app.UseCors("CorsPolicy");
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -188,7 +125,7 @@ namespace PhungDKH.Microservice.Api
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Microservice API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Identity API V1");
             });
 
             // auto migration
