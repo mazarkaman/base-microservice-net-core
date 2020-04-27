@@ -13,7 +13,6 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Tokens;
-    using PhungDKH.Identity.Api.Domain.Entities;
 
     [Route("api/account")]
     [Consumes("application/json")]
@@ -41,11 +40,14 @@
         [HttpPost("login")]
         public async Task<object> Login([FromBody] LoginDto model)
         {
+            // logout user
+            await _signInManager.SignOutAsync();
+
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
             if (result.Succeeded)
             {
                 var appUser = _userManager.Users.SingleOrDefault(r => r.Email == model.Email);
-                return await GenerateJwtToken(model.Email, appUser);
+                return GenerateJwtToken(model.Email, appUser);
             }
 
             throw new ApplicationException("INVALID_LOGIN_ATTEMPT");
@@ -64,13 +66,13 @@
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, false);
-                return await GenerateJwtToken(model.Email, user);
+                return GenerateJwtToken(model.Email, user);
             }
 
             throw new ApplicationException("UNKNOWN_ERROR");
         }
 
-        private async Task<object> GenerateJwtToken(string email, IdentityUser user)
+        private object GenerateJwtToken(string email, IdentityUser user)
         {
             var claims = new List<Claim>
             {
@@ -81,7 +83,7 @@
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtKey"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtExpireDays"]));
+            var expires = DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["JwtExpireDays"]));
 
             var token = new JwtSecurityToken(
                 _configuration["JwtIssuer"],

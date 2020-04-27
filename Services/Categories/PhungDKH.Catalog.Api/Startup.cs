@@ -18,6 +18,12 @@ namespace PhungDKH.Catalog.Api
     using PhungDKH.Core.Models.Common;
     using RabbitMQ.Client;
     using Serilog;
+    using PhungDKH.Core;
+    using System.IdentityModel.Tokens.Jwt;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.IdentityModel.Tokens;
+    using System.Text;
+    using System;
 
     public class Startup
     {
@@ -98,8 +104,8 @@ namespace PhungDKH.Catalog.Api
             services.AddHealthChecks()
                 .AddSqlServer(msSqlConnectionString);
 
-            services.AddMediatR(typeof(BaseRequestModel).Assembly);
-            services.AddAutoMapper(typeof(Startup).Assembly);
+            services.AddMediatR(ReflectionUtilities.GetAssemblies());
+            services.AddAutoMapper(ReflectionUtilities.GetAssemblies());
 
             services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
             {
@@ -149,6 +155,30 @@ namespace PhungDKH.Catalog.Api
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
 
+            // ===== Add Jwt Authentication ========
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+                })
+                .AddJwtBearer(cfg =>
+                {
+                    cfg.RequireHttpsMetadata = false;
+                    cfg.SaveToken = true;
+                    cfg.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidIssuer = Configuration["JwtIssuer"],
+                        ValidAudience = Configuration["JwtIssuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
+                        ClockSkew = TimeSpan.Zero // remove delay of token when expire
+                    };
+                });
+
+
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -174,6 +204,7 @@ namespace PhungDKH.Catalog.Api
 
             app.UseCors("CorsPolicy");
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using MediatR;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using PhungDKH.Catalog.Service.Categories;
     using PhungDKH.Core.Models.Common;
@@ -11,6 +12,7 @@
     [Route("api/categories")]
     [Consumes("application/json")]
     [Produces("application/json")]
+    [Authorize]
     public class CategoryController : ControllerBase
     {
         private readonly IMediator mediator;
