@@ -5,11 +5,11 @@ services:
     container_name: microservice-api
     image: phungdkh/microservice-api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
     build:
       context: .
-      dockerfile: Services/Categories/PhungDKH.Microservice.Api/Dockerfile
+      dockerfile: Services/Categories/PhungDKH.Catalog.Api/Dockerfile
     ports:
       - 1111:443
     depends_on:
@@ -45,7 +45,7 @@ services:
     container_name: identity-api
     image: phungdkh/identity-api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
     build:
       context: .

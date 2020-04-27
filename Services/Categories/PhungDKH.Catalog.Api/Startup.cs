@@ -1,27 +1,23 @@
-namespace PhungDKH.Identity.Api
+namespace PhungDKH.Catalog.Api
 {
-    using System.Collections.Generic;
+    using AutoMapper;
+    using PhungDKH.Catalog.Api.Infrastructure.Filters;
+    using MediatR;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using PhungDKH.Core;
-    using PhungDKH.Core.Constants;
-    using PhungDKH.Core.Extensions;
-    using PhungDKH.Identity.Api.Domain.Entities;
-    using PhungDKH.Identity.Api.Domain.Entities.Contexts;
-    using Serilog;
-    using Microsoft.EntityFrameworkCore;
-    using PhungDKH.Identity.Api.Infrastructure.Filters;
+    using Microsoft.Extensions.Logging;
     using Microsoft.OpenApi.Models;
-    using Microsoft.AspNetCore.Identity;
-    using System.IdentityModel.Tokens.Jwt;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.IdentityModel.Tokens;
-    using System.Text;
-    using System;
-    using PhungDKH.Identity.Api.Domain;
+    using PhungDKH.EvenBus;
+    using PhungDKH.EvenBus.Abstractions;
+    using PhungDKH.EventBusRabbitMQ;
+    using PhungDKH.Catalog.Domain.Entities.Contexts;
+    using PhungDKH.Core.Models.Common;
+    using RabbitMQ.Client;
+    using Serilog;
 
     public class Startup
     {
@@ -90,7 +86,7 @@ namespace PhungDKH.Identity.Api
 
             // Entity framework
             string msSqlConnectionString = Configuration.GetValue<string>("database:msSql:connectionString");
-            services.AddDbContext<AppIdentityDbContext>(opt =>
+            services.AddDbContext<AppCatalogDbContext>(opt =>
                 opt.UseSqlServer(
                     msSqlConnectionString,
                     options =>
@@ -98,32 +94,60 @@ namespace PhungDKH.Identity.Api
                         options.EnableRetryOnFailure();
                     }));
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppIdentityDbContext>()
-                .AddDefaultTokenProviders();
+            // Health checks
+            services.AddHealthChecks()
+                .AddSqlServer(msSqlConnectionString);
 
-            // ===== Add Jwt Authentication ========
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
-            services
-                .AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            services.AddMediatR(typeof(BaseRequestModel).Assembly);
+            services.AddAutoMapper(typeof(Startup).Assembly);
 
-                })
-                .AddJwtBearer(cfg =>
+            services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+            {
+                var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+
+                var factory = new ConnectionFactory()
                 {
-                    cfg.RequireHttpsMetadata = false;
-                    cfg.SaveToken = true;
-                    cfg.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidIssuer = Configuration["JwtIssuer"],
-                        ValidAudience = Configuration["JwtIssuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
-                        ClockSkew = TimeSpan.Zero // remove delay of token when expire
-                    };
-                });
+                    HostName = Configuration.GetValue<string>("rabbitmq:hostname"),
+                    DispatchConsumersAsync = true
+                };
+
+                if (!string.IsNullOrEmpty(Configuration.GetValue<string>("rabbitmq:username")))
+                {
+                    factory.UserName = Configuration.GetValue<string>("rabbitmq:username");
+                }
+
+                if (!string.IsNullOrEmpty(Configuration.GetValue<string>("rabbitmq:password")))
+                {
+                    factory.Password = Configuration.GetValue<string>("rabbitmq:password");
+                }
+
+                var retryCount = 5;
+                if (!string.IsNullOrEmpty(Configuration.GetValue<string>("rabbitmq:retycount")))
+                {
+                    retryCount = int.Parse(Configuration.GetValue<string>("rabbitmq:retycount"));
+                }
+
+                return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
+            });
+
+            var exchange = Configuration.GetValue<string>("eventbus:exchange");
+            var queue = Configuration.GetValue<string>("eventbus:queue");
+            services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
+            {
+                var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+                var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
+                var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+
+                var retryCount = 5;
+                if (!string.IsNullOrEmpty(Configuration.GetValue<string>("eventbus:retryCount")))
+                {
+                    retryCount = Configuration.GetValue<int>("eventbus:retryCount");
+                }
+
+                return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, eventBusSubcriptionsManager, exchange, queue, retryCount);
+            });
+
+            services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
 
             services.AddCors(options =>
             {
@@ -137,10 +161,7 @@ namespace PhungDKH.Identity.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, 
-            AppIdentityDbContext context,
-            RoleManager<IdentityRole> roleManager,
-            UserManager<IdentityUser> userManager)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -153,7 +174,6 @@ namespace PhungDKH.Identity.Api
 
             app.UseCors("CorsPolicy");
 
-            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -161,10 +181,18 @@ namespace PhungDKH.Identity.Api
                 endpoints.MapControllers();
             });
 
-            // auto run migration
-            RunMigration(app);
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
 
-            DummyData.Initialize(context, userManager, roleManager).Wait();
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Microservice API V1");
+            });
+
+            // auto migration
+            this.RunMigration(app);
         }
 
         /// <summary>
@@ -175,7 +203,7 @@ namespace PhungDKH.Identity.Api
         {
             using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
-                scope.ServiceProvider.GetRequiredService<AppIdentityDbContext>().Database.Migrate();
+                scope.ServiceProvider.GetRequiredService<AppCatalogDbContext>().Database.Migrate();
             }
         }
     }

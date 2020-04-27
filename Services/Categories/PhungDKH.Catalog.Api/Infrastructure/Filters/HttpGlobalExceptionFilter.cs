@@ -1,8 +1,8 @@
-namespace PhungDKH.Identity.Api.Infrastructure.Filters
+namespace PhungDKH.Catalog.Api.Infrastructure.Filters
 {
     using System.Net;
-    using PhungDKH.Identity.Api.Infrastructure.ActionResults;
-    using PhungDKH.Identity.Api.Infrastructure.Exceptions;
+    using PhungDKH.Catalog.Api.Infrastructure.ActionResults;
+    using PhungDKH.Catalog.Api.Infrastructure.Exceptions;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;
@@ -37,7 +37,7 @@ namespace PhungDKH.Identity.Api.Infrastructure.Filters
                 context.Exception,
                 context.Exception.Message);
 
-            if (context.Exception.GetType() == typeof(PhungDKHIdentityDomainException))
+            if (context.Exception.GetType() == typeof(PhungDKHMicroserviceDomainException))
             {
                 var json = new JsonErrorResponse
                 {

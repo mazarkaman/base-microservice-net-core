@@ -35,10 +35,10 @@
         /// Get  assemblies
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<Assembly> GetAssemblies()
+        public static Assembly[] GetAssemblies()
         {
             var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-            return currentAssemblies.Where(a => a.FullName.Contains("PhungDKH"));
+            return currentAssemblies.Where(a => a.FullName.Contains("PhungDKH")).ToArray();
         }
     }
 }
