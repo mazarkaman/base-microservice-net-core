@@ -7,13 +7,13 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["Services/Categories/PhungDKH.Catalog.Api/PhungDKH.Catalog.Api.csproj", "Services/Categories/PhungDKH.Catalog.Api/"]
+COPY ["Services/Catalog/PhungDKH.Catalog.Api/PhungDKH.Catalog.Api.csproj", "Services/Catalog/PhungDKH.Catalog.Api/"]
 COPY ["Sharing/PhungDKH.Core/PhungDKH.Core.csproj", "Sharing/PhungDKH.Core/"]
 COPY ["Sharing/PhungDKH.EventBusRabbitMQ/PhungDKH.EventBusRabbitMQ.csproj", "Sharing/PhungDKH.EventBusRabbitMQ/"]
 COPY ["Sharing/PhungDKH.EvenBus/PhungDKH.EvenBus.csproj", "Sharing/PhungDKH.EvenBus/"]
-RUN dotnet restore "Services/Categories/PhungDKH.Catalog.Api/PhungDKH.Catalog.Api.csproj"
+RUN dotnet restore "Services/Catalog/PhungDKH.Catalog.Api/PhungDKH.Catalog.Api.csproj"
 COPY . .
-WORKDIR "/src/Services/Categories/PhungDKH.Catalog.Api"
+WORKDIR "/src/Services/Catalog/PhungDKH.Catalog.Api"
 RUN dotnet build "PhungDKH.Catalog.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish

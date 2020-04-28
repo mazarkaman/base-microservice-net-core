@@ -1,15 +1,10 @@
 namespace PhungDKH.Identity.Api
 {
-    using System.Collections.Generic;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using PhungDKH.Core;
-    using PhungDKH.Core.Constants;
-    using PhungDKH.Core.Extensions;
-    using PhungDKH.Identity.Api.Domain.Entities;
     using PhungDKH.Identity.Api.Domain.Entities.Contexts;
     using Serilog;
     using Microsoft.EntityFrameworkCore;
@@ -22,6 +17,8 @@ namespace PhungDKH.Identity.Api
     using System.Text;
     using System;
     using PhungDKH.Identity.Api.Domain;
+    using PhungDKH.Identity.Api.Services;
+    using Swashbuckle.AspNetCore.Swagger;
 
     public class Startup
     {
@@ -83,6 +80,14 @@ namespace PhungDKH.Identity.Api
                     Contact = new OpenApiContact { Name = "DINH KHAC HOAI PHUNG", Email = "phungdkh@gmail.com", Url = null },
                 });
 
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+
                 c.DescribeAllParametersInCamelCase();
             });
 
@@ -95,12 +100,14 @@ namespace PhungDKH.Identity.Api
                     msSqlConnectionString,
                     options =>
                     {
-                        options.EnableRetryOnFailure();
+                        options.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                     }));
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppIdentityDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddTransient<IIdentityService<ApplicationUser>, IdentityService>();
 
             // ===== Add Jwt Authentication ========
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
@@ -140,7 +147,7 @@ namespace PhungDKH.Identity.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, 
             AppIdentityDbContext context,
             RoleManager<IdentityRole> roleManager,
-            UserManager<IdentityUser> userManager)
+            UserManager<ApplicationUser> userManager)
         {
             if (env.IsDevelopment())
             {
@@ -159,6 +166,16 @@ namespace PhungDKH.Identity.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Microservice API V1");
             });
 
             // auto run migration

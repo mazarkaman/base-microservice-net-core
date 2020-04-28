@@ -5,7 +5,7 @@ services:
     container_name: microservice-api
     image: phungdkh/microservice-api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
     build:
       context: .
@@ -45,7 +45,7 @@ services:
     container_name: identity-api
     image: phungdkh/identity-api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
     build:
       context: .

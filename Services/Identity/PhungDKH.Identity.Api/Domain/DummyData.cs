@@ -7,7 +7,7 @@
     public class DummyData
     {
         public static async Task Initialize(AppIdentityDbContext context,
-                              UserManager<IdentityUser> userManager,
+                              UserManager<ApplicationUser> userManager,
                               RoleManager<IdentityRole> roleManager)
         {
             context.Database.EnsureCreated();
@@ -30,7 +30,7 @@
 
             if (await userManager.FindByNameAsync("admin1@phungdkh.com.vn") == null)
             {
-                var user = new IdentityUser
+                var user = new ApplicationUser
                 {
                     UserName = "admin1@phungdkh.com.vn",
                     Email = "admin1@phungdkh.com.vn",
@@ -47,7 +47,7 @@
 
             if (await userManager.FindByNameAsync("admin2@phungdkh.com.vn") == null)
             {
-                var user = new IdentityUser
+                var user = new ApplicationUser
                 {
                     UserName = "admin2@phungdkh.com.vn",
                     Email = "admin2@phungdkh.com.vn",

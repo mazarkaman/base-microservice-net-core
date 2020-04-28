@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhungDKH.Catalog.Api", "Services\Categories\PhungDKH.Catalog.Api\PhungDKH.Catalog.Api.csproj", "{63CC510E-1E2D-434A-97C5-EFA431F249FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhungDKH.Catalog.Api", "Services\Catalog\PhungDKH.Catalog.Api\PhungDKH.Catalog.Api.csproj", "{63CC510E-1E2D-434A-97C5-EFA431F249FB}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{CCD2F228-E44F-438D-B793-F6CAD3653FD7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{5ACB5081-9F7B-4296-862F-4E22922993F9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Categories", "Categories", "{E16583E7-D44E-4773-B37E-D67FD0047119}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Catalog", "Catalog", "{E16583E7-D44E-4773-B37E-D67FD0047119}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sharing", "Sharing", "{32A5CB45-9686-4D17-B638-8720D1AFB547}"
 EndProject

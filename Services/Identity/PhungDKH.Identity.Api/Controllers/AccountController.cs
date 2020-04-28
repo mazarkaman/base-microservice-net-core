@@ -1,53 +1,32 @@
 ﻿namespace PhungDKH.Identity.Api.Controllers
 {
     using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Text;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.IdentityModel.Tokens;
+    using PhungDKH.Identity.Api.Domain;
+    using PhungDKH.Identity.Api.Models;
+    using PhungDKH.Identity.Api.Services;
 
     [Route("api/account")]
     [Consumes("application/json")]
     [Produces("application/json")]
     public class AccountController : ControllerBase
     {
-        private readonly ILogger<AccountController> _logger;
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IConfiguration _configuration;
+        private readonly IIdentityService<ApplicationUser> _identityService;
 
-        public AccountController(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration,
-            ILogger<AccountController> logger
-            )
+        public AccountController(IIdentityService<ApplicationUser> identityService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _configuration = configuration;
-            _logger = logger;
+            _identityService = identityService;
         }
 
         [HttpPost("login")]
         public async Task<object> Login([FromBody] LoginDto model)
         {
-            // logout user
-            await _signInManager.SignOutAsync();
+            var result = await _identityService.LoginAsync(model);
 
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-            if (result.Succeeded)
+            if (result != null)
             {
-                var appUser = _userManager.Users.SingleOrDefault(r => r.Email == model.Email);
-                return GenerateJwtToken(model.Email, appUser);
+                return result;
             }
 
             throw new ApplicationException("INVALID_LOGIN_ATTEMPT");
@@ -56,64 +35,14 @@
         [HttpPost("register")]
         public async Task<object> Register([FromBody] RegisterDto model)
         {
-            var user = new IdentityUser
-            {
-                UserName = model.Email,
-                Email = model.Email
-            };
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _identityService.RegisterAsync(model);
 
-            if (result.Succeeded)
+            if (result != null)
             {
-                await _signInManager.SignInAsync(user, false);
-                return GenerateJwtToken(model.Email, user);
+                return result;
             }
 
             throw new ApplicationException("UNKNOWN_ERROR");
-        }
-
-        private object GenerateJwtToken(string email, IdentityUser user)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtKey"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["JwtExpireDays"]));
-
-            var token = new JwtSecurityToken(
-                _configuration["JwtIssuer"],
-                _configuration["JwtIssuer"],
-                claims,
-                expires: expires,
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public class LoginDto
-        {
-            [Required]
-            public string Email { get; set; }
-
-            [Required]
-            public string Password { get; set; }
-
-        }
-
-        public class RegisterDto
-        {
-            [Required]
-            public string Email { get; set; }
-
-            [Required]
-            [StringLength(100, ErrorMessage = "PASSWORD_MIN_LENGTH", MinimumLength = 6)]
-            public string Password { get; set; }
         }
     }
 }
