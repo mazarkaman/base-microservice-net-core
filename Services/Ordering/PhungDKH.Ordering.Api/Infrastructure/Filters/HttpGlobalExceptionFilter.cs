@@ -1,8 +1,8 @@
-namespace PhungDKH.Catalog.Api.Infrastructure.Filters
+namespace PhungDKH.Ordering.Api.Infrastructure.Filters
 {
     using System.Net;
-    using PhungDKH.Catalog.Api.Infrastructure.ActionResults;
-    using PhungDKH.Catalog.Api.Infrastructure.Exceptions;
+    using PhungDKH.Ordering.Api.Infrastructure.ActionResults;
+    using PhungDKH.Ordering.Api.Infrastructure.Exceptions;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;

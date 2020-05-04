@@ -6,30 +6,30 @@ namespace PhungDKH.Catalog.Api.Infrastructure.Exceptions
     ///    Exception type for app exceptions.
     /// </summary>
     /// <seealso cref="System.Exception"/>
-    public class PhungDKHMicroserviceDomainException : Exception
+    public class PhungDKHDomainException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PhungDKHMicroserviceDomainException"/> class.
+        /// Initializes a new instance of the <see cref="PhungDKHDomainException"/> class.
         /// </summary>
-        public PhungDKHMicroserviceDomainException()
+        public PhungDKHDomainException()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PhungDKHMicroserviceDomainException"/> class.
+        /// Initializes a new instance of the <see cref="PhungDKHDomainException"/> class.
         /// </summary>
         /// <param name="message">The exception message.</param>
-        public PhungDKHMicroserviceDomainException(string message)
+        public PhungDKHDomainException(string message)
             : base(message)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PhungDKHMicroserviceDomainException"/> class.
+        /// Initializes a new instance of the <see cref="PhungDKHDomainException"/> class.
         /// </summary>
         /// <param name="message">The exception message.</param>
         /// <param name="innerException">The inner exception.</param>
-        public PhungDKHMicroserviceDomainException(string message, Exception innerException)
+        public PhungDKHDomainException(string message, Exception innerException)
             : base(message, innerException)
         {
         }

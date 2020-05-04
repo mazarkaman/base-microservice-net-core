@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  phungdkh.microservice.api:
+  phungdkh.catalog.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80

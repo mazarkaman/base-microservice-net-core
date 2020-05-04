@@ -1,9 +1,9 @@
 version: '3.7'
 
 services:
-  phungdkh.microservice.api:
-    container_name: microservice-api
-    image: phungdkh/microservice-api
+  phungdkh.catalog.api:
+    container_name: catalog-api
+    image: phungdkh/catalog-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
@@ -12,6 +12,22 @@ services:
       dockerfile: Services/Catalog/PhungDKH.Catalog.Api/Dockerfile
     ports:
       - 1111:443
+    depends_on:
+      - db1
+      - rabbitmq
+    networks:
+      - phungdkh-brigde
+  phungdkh.ordering.api:
+    container_name: ordering-api
+    image: phungdkh/ordering-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    build:
+      context: .
+      dockerfile: Services/Ordering/PhungDKH.Ordering.Api/Dockerfile
+    ports:
+      - 2222:443
     depends_on:
       - db1
       - rabbitmq
@@ -51,7 +67,7 @@ services:
       context: .
       dockerfile: Services/Identity/PhungDKH.Identity.Api/Dockerfile
     ports:
-      - 2222:443
+      - 3333:443
     depends_on:
       - db1
     networks: 
