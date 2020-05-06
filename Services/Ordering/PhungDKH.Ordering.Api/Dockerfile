@@ -22,4 +22,5 @@ RUN dotnet publish "PhungDKH.Ordering.Api.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN dotnet dev-certs https
 ENTRYPOINT ["dotnet", "PhungDKH.Ordering.Api.dll"]
