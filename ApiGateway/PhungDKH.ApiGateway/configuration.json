@@ -36,7 +36,7 @@
           "Port": 3333
         }
       ],
-      "UpstreamPathTemplate": "/api/account/login",
+      "UpstreamPathTemplate": "/api/public/login",
       "UpstreamHttpMethod": [
         "POST"
       ],

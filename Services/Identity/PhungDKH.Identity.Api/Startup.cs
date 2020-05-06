@@ -126,7 +126,8 @@ namespace PhungDKH.Identity.Api
                     cfg.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidIssuer = Configuration["JwtIssuer"],
-                        ValidAudience = Configuration["JwtIssuer"],
+                        ValidAudiences = new[] { "catalog", "ordering", "sso", "apigw" },
+                        ValidAudience = "sso",
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
                         ClockSkew = TimeSpan.Zero // remove delay of token when expire
                     };
