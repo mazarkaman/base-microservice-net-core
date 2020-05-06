@@ -14,10 +14,10 @@
 
         public Guid ProductId { get; set; }
 
-        public Product User { get; set; }
+        public Product Product { get; set; }
 
         public Guid CategoryId { get; set; }
 
-        public Category Role { get; set; }
+        public Category Category { get; set; }
     }
 }

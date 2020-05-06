@@ -1,80 +1,57 @@
 version: '3.7'
 
 services:
-  phungdkh.catalog.api:
-    container_name: catalog-api
-    image: phungdkh/catalog-api
+  catalog.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
-    build:
-      context: .
-      dockerfile: Services/Catalog/PhungDKH.Catalog.Api/Dockerfile
     ports:
-      - 1111:443
-    depends_on:
-      - db1
-      - rabbitmq
-    networks:
-      - phungdkh-brigde
-  phungdkh.ordering.api:
-    container_name: ordering-api
-    image: phungdkh/ordering-api
+      - "80"
+      - "443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+  ordering.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
-    build:
-      context: .
-      dockerfile: Services/Ordering/PhungDKH.Ordering.Api/Dockerfile
     ports:
-      - 2222:443
-    depends_on:
-      - db1
-      - rabbitmq
-    networks:
-      - phungdkh-brigde
+      - "80"
+      - "443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+  identity.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - "80"
+      - "443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+  apigateway.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - "80"
+      - "443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
   db1:
-    container_name: phungdkh.mssql.db
-    image: microsoft/mssql-server-linux:2017-latest
     environment:
       MSSQL_SA_PASSWORD: "phungdkh@!@#123"
       ACCEPT_EULA: "Y"
       MSSQL_TCP_PORT: 1433
     ports:
-      - 1433:1433
-    volumes:
-      - mssql-db-data:/var/opt/mssql
-    networks:
-      - phungdkh-brigde
+      - "1433:1433"
   rabbitmq:
-    container_name: phungdkh.rabbitmq
-    image: rabbitmq:3.7-management  
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest 
     ports:
-      - 15672:15672
-      - 5672:5672
-    networks: 
-      - phungdkh-brigde
-  phungdkh.identity.api:
-    container_name: identity-api
-    image: phungdkh/identity-api
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-    build:
-      context: .
-      dockerfile: Services/Identity/PhungDKH.Identity.Api/Dockerfile
-    ports:
-      - 2222:443
-    depends_on:
-      - db1
-    networks: 
-      - phungdkh-brigde
-volumes:
-  mssql-db-data:
-
-networks:
-  phungdkh-brigde:
-    driver: bridge
+      - "15672:15672"
+      - "5672:5672"

@@ -172,7 +172,7 @@ namespace PhungDKH.Ordering.Api
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
                 })
-                .AddJwtBearer(cfg =>
+                .AddJwtBearer("PhungDKHIdentityKey", cfg =>
                 {
                     cfg.RequireHttpsMetadata = false;
                     cfg.SaveToken = true;
@@ -184,7 +184,6 @@ namespace PhungDKH.Ordering.Api
                         ClockSkew = TimeSpan.Zero // remove delay of token when expire
                     };
                 });
-
 
             services.AddCors(options =>
             {
@@ -204,8 +203,11 @@ namespace PhungDKH.Ordering.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseHttpsRedirection();
+            else
+            {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
 
             app.UseRouting();
 

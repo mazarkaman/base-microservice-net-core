@@ -15,7 +15,6 @@ namespace PhungDKH.Catalog.Api
     using PhungDKH.EvenBus.Abstractions;
     using PhungDKH.EventBusRabbitMQ;
     using PhungDKH.Catalog.Domain.Entities.Contexts;
-    using PhungDKH.Core.Models.Common;
     using RabbitMQ.Client;
     using Serilog;
     using PhungDKH.Core;
@@ -173,18 +172,18 @@ namespace PhungDKH.Catalog.Api
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
                 })
-                .AddJwtBearer(cfg =>
-                {
-                    cfg.RequireHttpsMetadata = false;
-                    cfg.SaveToken = true;
-                    cfg.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidIssuer = Configuration["JwtIssuer"],
-                        ValidAudience = Configuration["JwtIssuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
-                        ClockSkew = TimeSpan.Zero // remove delay of token when expire
+                .AddJwtBearer("PhungDKHIdentityKey", cfg =>
+                 {
+                     cfg.RequireHttpsMetadata = false;
+                     cfg.SaveToken = true;
+                     cfg.TokenValidationParameters = new TokenValidationParameters
+                     {
+                         ValidIssuer = Configuration["JwtIssuer"],
+                         ValidAudience = Configuration["JwtIssuer"],
+                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
+                         ClockSkew = TimeSpan.Zero // remove delay of token when expire
                     };
-                });
+                 });
 
 
             services.AddCors(options =>
@@ -205,8 +204,11 @@ namespace PhungDKH.Catalog.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseHttpsRedirection();
+            else
+            {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
 
             app.UseRouting();
 

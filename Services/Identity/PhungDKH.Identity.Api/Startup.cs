@@ -119,7 +119,7 @@ namespace PhungDKH.Identity.Api
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
                 })
-                .AddJwtBearer(cfg =>
+                .AddJwtBearer("PhungDKHIdentityKey", cfg =>
                 {
                     cfg.RequireHttpsMetadata = false;
                     cfg.SaveToken = true;
@@ -144,7 +144,7 @@ namespace PhungDKH.Identity.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, 
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             AppIdentityDbContext context,
             RoleManager<IdentityRole> roleManager,
             UserManager<ApplicationUser> userManager)
@@ -153,8 +153,11 @@ namespace PhungDKH.Identity.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseHttpsRedirection();
+            else
+            {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
 
             app.UseRouting();
 

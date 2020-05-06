@@ -1,0 +1,55 @@
+{
+  "ReRoutes": [
+    //root
+    {
+      "DownstreamPathTemplate": "/api/categories",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "catalog.api",
+          "Port": 1111
+        }
+      ],
+      "UpstreamPathTemplate": "/api/catalog",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1s",
+        "PeriodTimespan": 1,
+        "Limit": 1
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "PhungDKHIdentityKey",
+        "AllowedScopes": []
+      }
+    },
+    //sso api config
+    {
+      "DownstreamPathTemplate": "/api/account/login",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "identity.api",
+          "Port": 3333
+        }
+      ],
+      "UpstreamPathTemplate": "/api/account/login",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1s",
+        "PeriodTimespan": 1,
+        "Limit": 1
+      }
+    }
+  ],
+  "GlobalConfiguration": {
+
+  }
+}
