@@ -1,0 +1,25 @@
+{
+  "routes": [
+    {
+      "endpoint": "/api/catalog",
+      "destination": {
+        "uri": "https://catalog-api:1111/api/categories",
+        "requiresAuthentication": "true"
+      }
+    },
+    {
+      "endpoint": "/api/ordering",
+      "destination": {
+        "uri": "https://ordering-api:2222/orders",
+        "requiresAuthentication": "true"
+      }
+    },
+    {
+      "endpoint": "/api/account/login",
+      "destination": {
+        "uri": "https://identity-api:3333/api/account/login",
+        "requiresAuthentication": "false"
+      }
+    }
+  ]
+}

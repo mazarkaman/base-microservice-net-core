@@ -1,55 +1,43 @@
 version: '3.7'
 
 services:
-  phungdkh.catalog.api:
+  catalog-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
     ports:
       - "1111:80"
       - "1112:443"
-    depends_on:
-      - db1
-      - rabbitmq
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-  phungdkh.ordering.api:
+  ordering-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
     ports:
       - "2221:80"
       - "2222:443"
-    depends_on:
-      - db1
-      - rabbitmq
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-  phungdkh.identity.api:
+  identity-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
     ports:
       - "3331:80"
       - "3333:443"
-    depends_on:
-      - db1
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-  phungdkh.apigateway.api:
+  apigateway-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
     ports:
       - "4441:80"
       - "4444:443"
-    depends_on:
-      - phungdkh.catalog.api
-      - phungdkh.ordering.api
-      - phungdkh.identity.api
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

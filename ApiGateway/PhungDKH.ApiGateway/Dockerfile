@@ -8,7 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["ApiGateway/PhungDKH.ApiGateway/PhungDKH.ApiGateway.csproj", "ApiGateway/PhungDKH.ApiGateway/"]
-COPY ["ApiGateway/PhungDKH.ApiGateway/configuration/configuration.json", "ApiGateway/PhungDKH.ApiGateway/configuration/"]
+COPY ["ApiGateway/PhungDKH.ApiGateway/routes.json", "ApiGateway/PhungDKH.ApiGateway/"]
 RUN dotnet restore "ApiGateway/PhungDKH.ApiGateway/PhungDKH.ApiGateway.csproj"
 COPY . .
 WORKDIR "/src/ApiGateway/PhungDKH.ApiGateway"

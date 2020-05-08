@@ -1,63 +1,67 @@
 version: '3.7'
 
 services:
-  phungdkh.catalog.api:
-    container_name: catalog-api
-    image: phungdkh/catalog-api
+  catalog-api:
+    container_name: catalog_api
+    image: phungdkh/catalog_api
     build:
       context: .
       dockerfile: Services/Catalog/PhungDKH.Catalog.Api/Dockerfile
+    depends_on:
+      - db1
+      - rabbitmq
     networks:
-      - phungdkh-brigde
-  phungdkh.ordering.api:
-    container_name: ordering-api
-    image: phungdkh/ordering-api
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - phungdkh-network
+  ordering-api:
+    container_name: ordering_api
+    image: phungdkh/ordering_api
     build:
       context: .
       dockerfile: Services/Ordering/PhungDKH.Ordering.Api/Dockerfile
+    depends_on:
+      - db1
+      - rabbitmq
     networks:
-      - phungdkh-brigde
-  phungdkh.identity.api:
-    container_name: identity-api
-    image: phungdkh/identity-api
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - phungdkh-network
+  identity-api:
+    container_name: identity_api
+    image: phungdkh/identity_api
     build:
       context: .
       dockerfile: Services/Identity/PhungDKH.Identity.Api/Dockerfile
+    depends_on:
+      - db1
     networks: 
-      - phungdkh-brigde
-  phungdkh.apigateway.api:
-    container_name: apigateway-api
-    image: phungdkh/apigateway-api
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - phungdkh-network
+  apigateway-api:
+    container_name: apigateway_api
+    image: phungdkh/apigateway_api
     build:
       context: .
       dockerfile: ApiGateway/PhungDKH.ApiGateway/Dockerfile
+    depends_on:
+      - catalog-api
+      - ordering-api
+      - identity-api
     networks: 
-      - phungdkh-brigde
+      - phungdkh-network
   db1:
-    container_name: phungdkh.mssql.db
+    container_name: phungdkh_mssql_db
     image: microsoft/mssql-server-linux:2017-latest
     volumes:
-      - mssql-db-data:/var/opt/mssql
+      - mssql_db_data:/var/opt/mssql
     networks:
-      - phungdkh-brigde
+      - phungdkh-network
   rabbitmq:
-    container_name: phungdkh.rabbitmq
+    container_name: phungdkh_rabbitmq
     image: rabbitmq:3.7-management  
     networks: 
-      - phungdkh-brigde
+      - phungdkh-network
   
 volumes:
-  mssql-db-data:
+  mssql_db_data:
 
 networks:
-  phungdkh-brigde:
+  phungdkh-network:
     driver: bridge
+    external: true
