@@ -8,6 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["Services/Identity/PhungDKH.Identity.Api/PhungDKH.Identity.Api.csproj", "Services/Identity/PhungDKH.Identity.Api/"]
+COPY ["Services/Identity/PhungDKH.Identity.Api/appsettings.Development.json", "Services/Identity/PhungDKH.Identity.Api/"]
 RUN dotnet restore "Services/Identity/PhungDKH.Identity.Api/PhungDKH.Identity.Api.csproj"
 COPY . .
 WORKDIR "/src/Services/Identity/PhungDKH.Identity.Api"

@@ -1,40 +1,27 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-
 namespace PhungDKH.ApiGateway
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using Serilog;
+
     public class Program
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args)
-        {
-            IWebHostBuilder builder = WebHost.CreateDefaultBuilder(args);
-            builder.ConfigureServices(s => s.AddSingleton(builder))
-                .ConfigureAppConfiguration(ic => ic.AddJsonFile("configuration.json"))
-                .UseStartup<Startup>()
-                .ConfigureLogging((hostingContext, loggingbuilder) =>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    loggingbuilder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                    loggingbuilder.AddConsole();
-                    loggingbuilder.AddDebug();
-                })
-                .UseSerilog((builderContext, config) =>
-                {
-                    config
-                        .MinimumLevel.Information()
-                        .Enrich.FromLogContext()
-                        .WriteTo.Console();
+                    webBuilder.UseStartup<Startup>();
                 });
-            IWebHost host = builder.Build();
-            return host;
-        }
     }
 }
