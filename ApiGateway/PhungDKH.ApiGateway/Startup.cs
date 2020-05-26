@@ -1,51 +1,73 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
+using Serilog;
 
 namespace PhungDKH.ApiGateway
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+              .SetBasePath(env.ContentRootPath)
+              .AddJsonFile($"ocelot.json", optional: true, reloadOnChange: true)
+              .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
+            builder.AddEnvironmentVariables();
+            Configuration = builder.Build();
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.Logger(log => log.Filter.ByIncludingOnly("@Level = 'Information'")
+                    .WriteTo.RollingFile(
+                        pathFormat: "Logs//Informations//log-information-{Date}.txt",
+                        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+                    ))
+                .WriteTo.Logger(log => log.Filter.ByIncludingOnly("@Level = 'Warning'")
+                    .WriteTo.RollingFile(
+                        pathFormat: "Logs//Warnings//log-warning-{Date}.txt",
+                        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+                    ))
+                .WriteTo.Logger(log => log.Filter.ByIncludingOnly("@Level = 'Error'")
+                    .WriteTo.RollingFile(
+                        pathFormat: "Logs//Errors//log-error-{Date}.txt",
+                        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+                    ))
+                .CreateLogger();
         }
 
-        public IConfiguration Configuration { get; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public static IConfigurationRoot Configuration;
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy",
-                    builder => builder
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .SetIsOriginAllowed((host) => true)
-                    .AllowCredentials());
-            });
-
             // ===== Add Jwt Authentication ========
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
             services
                 .AddAuthentication(options =>
                 {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
-                .AddJwtBearer("PhungDKHIdentityKey", cfg =>
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, cfg =>
                 {
                     cfg.RequireHttpsMetadata = false;
                     cfg.SaveToken = true;
@@ -58,35 +80,39 @@ namespace PhungDKH.ApiGateway
                     };
                 });
 
-
             services.AddOcelot(Configuration);
+            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors("CorsPolicy");
+            // global cors policy
+            app.UseCors(x => x
+                .SetIsOriginAllowed(origin => true)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
 
-            app.MapWhen(context => context.Request.Path.Value.Contains("public"),
-                               HandlePublic);
+            app.UseRouting();
 
             app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGet("/", async context =>
+                {
+                    await context.Response.WriteAsync("Hello World!");
+                });
+            });
 
             app.UseOcelot().Wait();
-        }
-
-        private static void HandlePublic(IApplicationBuilder app)
-        {
-            app.Run(async context =>
-            {
-                var branchVer = context.Request.Query["branch"];
-                await context.Response.WriteAsync($"Branch used = {branchVer}");
-            });
         }
     }
 }

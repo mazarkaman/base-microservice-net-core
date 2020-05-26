@@ -33,7 +33,6 @@
         /// <param name="cancellationToken">The cancellation token to abort execution.</param>
         /// <returns>Returns.</returns>
         [HttpPost]
-        [HttpPut]
         public async Task<ResponseModel> PostAsync([FromBody] OrderCreateRequest request, CancellationToken cancellationToken)
         {
             return await this.mediator.Send(request, cancellationToken);

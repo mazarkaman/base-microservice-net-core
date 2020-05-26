@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using PhungDKH.Identity.Api.Domain;
     using PhungDKH.Identity.Api.Models;
@@ -19,6 +20,7 @@
             _identityService = identityService;
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<object> Login([FromBody] LoginDto model)
         {
@@ -32,6 +34,7 @@
             throw new ApplicationException("INVALID_LOGIN_ATTEMPT");
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<object> Register([FromBody] RegisterDto model)
         {

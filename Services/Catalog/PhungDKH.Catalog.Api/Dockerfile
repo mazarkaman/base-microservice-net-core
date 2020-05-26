@@ -8,6 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["Services/Catalog/PhungDKH.Catalog.Api/PhungDKH.Catalog.Api.csproj", "Services/Catalog/PhungDKH.Catalog.Api/"]
+COPY ["Services/Catalog/PhungDKH.Catalog.Api/appsettings.Development.json", "Services/Catalog/PhungDKH.Catalog.Api/"]
 COPY ["Sharing/PhungDKH.Core/PhungDKH.Core.csproj", "Sharing/PhungDKH.Core/"]
 COPY ["Sharing/PhungDKH.EventBusRabbitMQ/PhungDKH.EventBusRabbitMQ.csproj", "Sharing/PhungDKH.EventBusRabbitMQ/"]
 COPY ["Sharing/PhungDKH.EvenBus/PhungDKH.EvenBus.csproj", "Sharing/PhungDKH.EvenBus/"]

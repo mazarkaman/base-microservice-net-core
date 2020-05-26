@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using MediatR;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using PhungDKH.Catalog.Service.Categories;

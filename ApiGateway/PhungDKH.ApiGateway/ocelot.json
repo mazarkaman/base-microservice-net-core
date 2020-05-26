@@ -1,6 +1,5 @@
 {
-  "ReRoutes": [
-    //root
+  "Routes": [
     {
       "DownstreamPathTemplate": "/api/categories",
       "DownstreamScheme": "http",
@@ -22,23 +21,18 @@
         "Limit": 1
       },
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "PhungDKHIdentityKey",
+        "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
       }
     },
-    //sso api config
     {
       "DownstreamPathTemplate": "/api/account/login",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "identity.api",
-          "Port": 3333
+          "Port": 3331
         }
-      ],
-      "UpstreamPathTemplate": "/api/account/login",
-      "UpstreamHttpMethod": [
-        "POST"
       ],
       "RateLimitOptions": {
         "ClientWhitelist": [],
@@ -46,10 +40,18 @@
         "Period": "1s",
         "PeriodTimespan": 1,
         "Limit": 1
+      },
+      "UpstreamPathTemplate": "/api/account/login",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
       }
     }
   ],
   "GlobalConfiguration": {
-
+    "BaseUrl": "http://apigateway.api:4441"
   }
 }
